@@ -4,90 +4,101 @@ var rainbowDriver = rainbowDriver || {};
 (function (argument) {
     "use strict";
 
-    var messageWebSocket,
-        messageWriter;
+    var connection,
+        writer,
+        tryAgain = true;
 
-    function sendMessage(msg) {
-        messageWriter.writeString(msg);
-        messageWriter.storeAsync().done("", sendError);
+    function connect() {
+        var host = rainbowDriver.host || "ws://localhost:8080",
+            uri = new Windows.Foundation.Uri(host + '/browser_connection/websocket');
+
+        tryAgain = false;
+        connection = new Windows.Networking.Sockets.MessageWebSocket();
+        connection.control.messageType = Windows.Networking.Sockets.SocketMessageType.utf8;
+
+        connection.onclosed = closed;
+        connection.onmessagereceived = receivedMessage;
+
+        connection.connectAsync(uri).done(connected, connectionError);
     }
 
-    function onMessageReceived(args) {
-        try {
-            // The incoming message is already buffered.
-            var dataReader = args.getDataReader(),
-                receivedString = dataReader.readString(dataReader.unconsumedBufferLength),
-                receivedData;
+    function connected() {
+        writer = new Windows.Storage.Streams.DataWriter(connection.outputStream);
+        sendMessage('{ "status": "ready" }');
+    }
+
+    function connectionError(error) {
+        console.log('Unable to connect: ', error);
+        tryAgain = true;
+    }
+
+    function closed(error) {
+        tryAgain = true;
+        if (error) {
+            console.log('Connection closed: ', error);
+        }
+        if (connection) {
+            connection.close();
+        }
+        if (writer) {
+            writer.close();
+        }
+        writer = null;
+        connection = null;
+    }
+
+    function receivedMessage(message) {
+        var dataReader,
+            receivedString,
+            receivedData = null;
+
+        if (message.type == 'messagereceived' && message.getDataReader) {
+            try {
+                dataReader = message.getDataReader();
+            } catch (e) {
+                console.error('Error reading data');
+                return closed();
+            }
+            receivedString = dataReader.readString(dataReader.unconsumedBufferLength);
+            console.info("Message received: ", receivedString);
             try {
                 receivedData = JSON.parse(receivedString);
-            } catch (e) {}
-            // Use the dataReader to read data from the received message
-            console.log(receivedString);
+            } catch (e) { }
+        }
 
-            if (rainbowDriver.commands && receivedData && 'command' in receivedData && receivedData.command in rainbowDriver.commands) {
-                console.log('recognized command');
-                rainbowDriver.commands[receivedData.command](receivedData);
-            }
-        } catch (e) {
-            console.error('fail to read response ', e);
-            onClosed();
+        if (receivedData) {
+            executeCommand(receivedData);
         }
     }
 
-    function onClosed(args) {
-        // You can add code to log or display the code and reason
-        // for the closure (stored in args.code and args.reason)
-        if (messageWebSocket) {
-            messageWebSocket.close();
+    function executeCommand(data) {
+        if (data &&
+            'command' in data &&
+            rainbowDriver.commands &&
+            data.command in rainbowDriver.commands) {
+
+            rainbowDriver.commands[data.command](data);
         }
-        messageWebSocket = null;
+    }
+
+    function sendMessage(message) {
+        writer.writeString(message);
+        writer.storeAsync().done("", sendError);
     }
 
     function sendError() {
-        console.log('sendError', arguments);
+        console.log('Error sending string, closing connection');
+        closed();
     }
 
-    function startSend(url) {
-        url = url || "ws://localhost:8080";
-        if (!messageWebSocket) {
-            var serverAddress,
-                webSocket = new Windows.Networking.Sockets.MessageWebSocket();
-            // MessageWebSocket supports both utf8 and binary messages.
-            // When utf8 is specified as the messageType, then the developer
-            // promises to only send utf8-encoded data.
-            webSocket.control.messageType = Windows.Networking.Sockets.SocketMessageType.utf8;
-            // Set up callbacks
-            webSocket.onmessagereceived = onMessageReceived;
-            webSocket.onclosed = onClosed;
+    rainbowDriver.connect = connect;
+    rainbowDriver.sendMessage = sendMessage;
 
-            serverAddress = new Windows.Foundation.Uri(url + '/browser_connection/websocket');
-
-            try {
-                webSocket.connectAsync(serverAddress).done(function () {
-                    messageWebSocket = webSocket;
-                    // The default DataWriter encoding is utf8.
-                    messageWriter = new Windows.Storage.Streams.DataWriter(webSocket.outputStream);
-                    sendMessage('created connection');
-
-                }, function (error) {
-                    console.error('The connection failed: ', error);
-                    // The connection failed; add your own code to log or display
-                    // the error, or take a specific action.
-                });
-            } catch (error) {
-                // An error occurred while trying to connect; add your own code to
-                // log or display the error, or take a specific action.
-                console.error('An error occurred while trying to connect: ', error);
-            }
-
+    setInterval(function reconnectTimer() {
+        if (tryAgain) {
+            connect();
         }
-        else {
-            // The connection already exists; go ahead and send the message.
-            sendMessage('reused connection');
-        }
-    }
-
-    rainbowDriver.connect = startSend;
+    }, 2 * 1000);
 
 })();
 
