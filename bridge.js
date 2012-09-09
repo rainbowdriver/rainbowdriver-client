@@ -76,12 +76,13 @@ var rainbowDriver = rainbowDriver || {};
             'command' in data &&
             rainbowDriver.commands &&
             data.command in rainbowDriver.commands) {
-
-            rainbowDriver.commands[data.command](data);
-        }
+                var result = rainbowDriver.commands[data.command](data);
+                sendMessage(result);
+            }
     }
 
     function sendMessage(message) {
+        console.log("sending message: " + message);
         writer.writeString(message);
         writer.storeAsync().done("", sendError);
     }
@@ -101,4 +102,3 @@ var rainbowDriver = rainbowDriver || {};
     }, 2 * 1000);
 
 })();
-

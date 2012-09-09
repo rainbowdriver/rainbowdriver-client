@@ -26,8 +26,22 @@ var rainbowDriver = rainbowDriver || {};
 
             element.dispatchEvent(event);
             return true;
+        },
+
+        getValue: function getValue(data) {
+
+            var element = document.querySelector(data.selector);
+
+            if (!element) {
+                return false;
+            }
+       
+            var response = JSON.stringify({
+                name: 'getElementText',
+                value: element.textContent
+                });
+            return response;
         }
     };
 
 })();
-
