@@ -5,7 +5,6 @@ var rainbowDriver = rainbowDriver || {};
 
     rainbowDriver.commands = {
         click: function clickElement(data) {
-
             var element = document.querySelector(data.selector),
                 rect = element.getClientRects()[0],
                 event;
@@ -25,23 +24,40 @@ var rainbowDriver = rainbowDriver || {};
                 element);
 
             element.dispatchEvent(event);
+
             return true;
         },
 
         getValue: function getValue(data) {
-
             var element = document.querySelector(data.selector);
 
             if (!element) {
                 return false;
             }
-       
+
             var response = JSON.stringify({
                 name: 'getElementText',
                 value: element.textContent
-                });
+            });
+
+            return response;
+        },
+
+        sendKeysToElement: function sendKeysToElement(data) {
+            var element = document.querySelector(data.selector);
+
+            if (!element) {
+                return false;
+            }
+
+            element.value = data.value;
+
+            var response = JSON.stringify({
+                name: 'sendKeysToElement',
+                value: "ok"
+            });
+
             return response;
         }
     };
-
 })();
