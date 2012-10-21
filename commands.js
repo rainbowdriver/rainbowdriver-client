@@ -24,8 +24,17 @@ var rainbowDriver = rainbowDriver || {};
                 element);
 
             element.dispatchEvent(event);
-
+            
             return true;
+        },
+
+        getTitle: function getTitle(data) {
+            var response = JSON.stringify({
+                name: 'getTitle',
+                value: document.title
+            });
+
+            return response;
         },
 
         getValue: function getValue(data) {
@@ -34,7 +43,7 @@ var rainbowDriver = rainbowDriver || {};
             if (!element) {
                 return false;
             }
-
+       
             var response = JSON.stringify({
                 name: 'getElementText',
                 value: element.textContent
@@ -54,10 +63,12 @@ var rainbowDriver = rainbowDriver || {};
 
             var response = JSON.stringify({
                 name: 'sendKeysToElement',
-                value: "ok"
+                status: 0,
+                value: ""
             });
 
             return response;
         }
     };
+
 })();
