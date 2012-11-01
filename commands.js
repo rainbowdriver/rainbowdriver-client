@@ -52,6 +52,21 @@ var rainbowDriver = rainbowDriver || {};
             return response;
         },
 
+        getName: function getName(data) {
+            var element = document.querySelector(data.selector);
+
+            if (!element) {
+                return false;
+            }
+       
+            var response = JSON.stringify({
+                name: 'getElementTagName',
+                value: element.tagName
+            });
+
+            return response;
+        },
+
         sendKeysToElement: function sendKeysToElement(data) {
             var element = document.querySelector(data.selector);
 
