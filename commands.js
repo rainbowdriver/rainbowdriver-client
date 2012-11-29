@@ -4,6 +4,28 @@ var rainbowDriver = rainbowDriver || {};
     "use strict";
 
     rainbowDriver.commands = {
+        findElement: function findElement(data) {
+            var element = document.querySelector(data.value);
+
+            if (!element) {
+                return false;
+            }
+            else {
+                var element_to_return = {};
+                for (var i in element) {
+                    if (typeof element[i] === 'string' || typeof element[i] === 'number') {
+                        element_to_return[i] = element[i];
+                    }
+                }
+                var response = JSON.stringify({
+                    name: 'findElement',
+                    value: new Date().getTime(),
+                    element: element_to_return
+                });
+                return response;
+            }
+        },
+
         click: function clickElement(data) {
             var element = document.querySelector(data.selector),
                 rect = element.getClientRects()[0],
