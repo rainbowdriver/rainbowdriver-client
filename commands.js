@@ -11,16 +11,25 @@ var rainbowDriver = rainbowDriver || {};
                 return false;
             }
             else {
-                var element_to_return = {};
-                for (var i in element) {
-                    if (typeof element[i] === 'string' || typeof element[i] === 'number') {
-                        element_to_return[i] = element[i];
-                    }
-                }
                 var response = JSON.stringify({
                     name: 'findElement',
                     value: new Date().getTime(),
-                    element: element_to_return
+                    selector: data.value
+                });
+                return response;
+            }
+        },
+
+        getElementAttribute: function findElement(data) {
+            var element = document.querySelector(data.selector);
+
+            if (!element) {
+                return false;
+            }
+            else {
+                var response = JSON.stringify({
+                    name: 'getElementAttribute',
+                    value: element.getAttribute(data.attribute)
                 });
                 return response;
             }
