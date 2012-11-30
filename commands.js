@@ -5,18 +5,21 @@ var rainbowDriver = rainbowDriver || {};
 
     rainbowDriver.commands = {
         findElement: function findElement(data) {
-            var element = document.querySelector(data.value);
+            var element = document.querySelector(data.selector);
 
-            if (!element) {
-                return false;
-            }
-            else {
-                var response = JSON.stringify({
+            if (element) {
+                return JSON.stringify({
                     name: 'findElement',
-                    value: new Date().getTime(),
-                    selector: data.value
+                    elementId: new Date().getTime(),
+                    selector: data.selector,
+                    status: 0
                 });
-                return response;
+            } else {
+                return JSON.stringify({
+                    name: 'findElement',
+                    status: 7,
+                    selector: data.selector
+                });
             }
         },
 
