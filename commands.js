@@ -23,6 +23,16 @@ var rainbowDriver = rainbowDriver || {};
             }
         },
 
+        isElementDisplayed: function isElementDisplayed(data) {
+            var element = document.querySelector(data.selector);
+
+            return JSON.stringify({
+                name: 'isElementDisplayed',
+                status: 0,
+                value: element.style.display !== "none"
+            });
+        },
+
         getElementAttribute: function findElement(data) {
             var element = document.querySelector(data.selector);
 
