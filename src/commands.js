@@ -4,6 +4,16 @@ var rainbowDriver = rainbowDriver || {};
     "use strict";
 
     rainbowDriver.commands = {
+        executeScript: function executeScript(data) {
+            var result = eval(data.script);
+
+            return JSON.stringify({
+                name: 'executeScript',
+                status: 0,
+                value: result
+            });
+        },
+
         findElement: function findElement(data) {
             var element = document.querySelector(data.selector);
 
