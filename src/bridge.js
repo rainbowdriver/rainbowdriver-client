@@ -95,6 +95,10 @@ var rainbowDriver = rainbowDriver || {};
     rainbowDriver.connect = connect;
     rainbowDriver.sendMessage = sendMessage;
 
+    if(typeof exports !== 'undefined') {
+        exports.rainbowDriver = rainbowDriver;
+    }
+
     setInterval(function reconnectTimer() {
         if (tryAgain) {
             connect();

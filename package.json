@@ -1,0 +1,25 @@
+{
+  "name": "rainbowdriver-client",
+  "version": "0.0.1",
+  "description": "client component for selenium rainbowdriver for winjs",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node node_modules/mocha/bin/mocha --ignore-leaks -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/rainbowdriver/rainbowdriver-client.git"
+  },
+  "keywords": [
+    "rainbowdriver"
+  ],
+  "author": "Irae <irae@irae.pro.br>",
+  "license": "BSD",
+  "devDependencies": {
+    "mocha": "~1.7.3",
+    "sinon": "~1.5.2"
+  }
+}
