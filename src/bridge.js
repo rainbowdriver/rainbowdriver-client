@@ -10,41 +10,21 @@ var rainbowDriver = rainbowDriver || {};
 
     function connect() {
         var host = rainbowDriver.host || "ws://localhost:8080",
-            uri = new Windows.Foundation.Uri(host + '/browser_connection/websocket');
+            uri = new (Windows.Foundation.Uri)(host + '/browser_connection/websocket');
 
         tryAgain = false;
         connection = new (Windows.Networking.Sockets.MessageWebSocket)();
         connection.control.messageType = Windows.Networking.Sockets.SocketMessageType.utf8;
 
-        connection.onclosed = closed;
+        connection.onclosed = bridgeError.bind(connection, "Connection closed");
         connection.onmessagereceived = receivedMessage;
 
-        connection.connectAsync(uri).done(connected, connectionError);
+        connection.connectAsync(uri).done(connected, bridgeError.bind(connection, "Unable to connect"));
     }
 
     function connected() {
-        writer = new Windows.Storage.Streams.DataWriter(connection.outputStream);
+        writer = new (Windows.Storage.Streams.DataWriter)(connection.outputStream);
         sendMessage('{ "status": "ready" }');
-    }
-
-    function connectionError(error) {
-        console.log('Unable to connect: ', error);
-        tryAgain = true;
-    }
-
-    function closed(error) {
-        tryAgain = true;
-        if (error) {
-            console.log('Connection closed: ', error);
-        }
-        if (connection) {
-            connection.close();
-        }
-        if (writer) {
-            writer.close();
-        }
-        writer = null;
-        connection = null;
     }
 
     function receivedMessage(message) {
@@ -56,8 +36,7 @@ var rainbowDriver = rainbowDriver || {};
             try {
                 dataReader = message.getDataReader();
             } catch (e) {
-                console.error('Error reading data');
-                return closed();
+                return bridgeError('Error reading data');
             }
             receivedString = dataReader.readString(dataReader.unconsumedBufferLength);
             console.info("Message received: ", receivedString);
@@ -71,6 +50,12 @@ var rainbowDriver = rainbowDriver || {};
         }
     }
 
+    function sendMessage(message) {
+        console.log("sending message: " + message);
+        writer.writeString(message);
+        writer.storeAsync().done(null, bridgeError.bind(writer, 'Error sending string, closing connection'));
+    }
+
     function executeCommand(data) {
         if (data &&
             'command' in data &&
@@ -81,15 +66,24 @@ var rainbowDriver = rainbowDriver || {};
             }
     }
 
-    function sendMessage(message) {
-        console.log("sending message: " + message);
-        writer.writeString(message);
-        writer.storeAsync().done("", sendError);
+    function cleanUp() {
+        if (connection) {
+            connection.close();
+        }
+        if (writer) {
+            writer.close();
+        }
+        writer = null;
+        connection = null;
+        tryAgain = true;
     }
 
-    function sendError() {
-        console.log('Error sending string, closing connection');
-        closed();
+    function bridgeError(message, error) {
+        console.log(message);
+        if (error) {
+            console.log(error);
+        }
+        cleanUp();
     }
 
     rainbowDriver.connect = connect;
