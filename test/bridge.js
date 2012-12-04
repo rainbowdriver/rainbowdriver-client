@@ -19,6 +19,7 @@ describe('Bridge', function(){
         it('creates a new connection', function(){
             bridge.connect();
             assert(Windows.Networking.Sockets.MessageWebSocket.calledOnce);
+            assert(Windows.Networking.Sockets.MessageWebSocket.calledWithNew);
             Windows.Networking.Sockets.MessageWebSocket.reset();
         });
 

@@ -13,7 +13,7 @@ var rainbowDriver = rainbowDriver || {};
             uri = new Windows.Foundation.Uri(host + '/browser_connection/websocket');
 
         tryAgain = false;
-        connection = new Windows.Networking.Sockets.MessageWebSocket();
+        connection = new (Windows.Networking.Sockets.MessageWebSocket)();
         connection.control.messageType = Windows.Networking.Sockets.SocketMessageType.utf8;
 
         connection.onclosed = closed;
