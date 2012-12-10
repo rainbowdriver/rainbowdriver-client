@@ -39,7 +39,7 @@ var rainbowDriver = rainbowDriver || {};
             return JSON.stringify({
                 name: 'isElementDisplayed',
                 status: 0,
-                value: element.style.display !== "none"
+                value: element.clientHeight > 0
             });
         },
 
@@ -78,7 +78,7 @@ var rainbowDriver = rainbowDriver || {};
                 element);
 
             element.dispatchEvent(event);
-            
+
             return true;
         },
 
@@ -97,7 +97,7 @@ var rainbowDriver = rainbowDriver || {};
             if (!element) {
                 return false;
             }
-       
+
             var response = JSON.stringify({
                 name: 'getElementText',
                 value: element.textContent
@@ -112,7 +112,7 @@ var rainbowDriver = rainbowDriver || {};
             if (!element) {
                 return false;
             }
-       
+
             var response = JSON.stringify({
                 name: 'getElementTagName',
                 value: element.tagName

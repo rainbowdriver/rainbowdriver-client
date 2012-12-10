@@ -2,5 +2,6 @@
     "node" : true,
     "es5" : true,
     "strict": false,
-    "devel": true
+    "devel": true,
+    "browser": true
 }
