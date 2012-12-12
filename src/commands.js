@@ -39,7 +39,7 @@ var rainbowDriver = rainbowDriver || {};
             return JSON.stringify({
                 name: 'isElementDisplayed',
                 status: 0,
-                value: element.clientHeight > 0
+                value: element.offsetHeight > 0
             });
         },
 
