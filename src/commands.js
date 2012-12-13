@@ -132,12 +132,11 @@ var rainbowDriver = rainbowDriver || {};
                 var selected = element.checked;
             }
 
-            var response = JSON.stringify({
+            return JSON.stringify({
                 name: 'getSelected',
+                status: 0,
                 value: selected
             });
-
-            return response;
         },
 
         sendKeysToElement: function sendKeysToElement(data) {
