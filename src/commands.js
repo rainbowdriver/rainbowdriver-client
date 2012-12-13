@@ -121,6 +121,25 @@ var rainbowDriver = rainbowDriver || {};
             return response;
         },
 
+        getSelected: function getSelected(data) {
+            var element = document.querySelector(data.selector);                
+
+            if (!element) {
+                return false;
+            }
+
+            if (element.tagName === 'INPUT' && element.type === 'checkbox') {
+                var selected = element.checked;
+            }
+
+            var response = JSON.stringify({
+                name: 'getSelected',
+                value: selected
+            });
+
+            return response;
+        },
+
         sendKeysToElement: function sendKeysToElement(data) {
             var element = document.querySelector(data.selector);
 
