@@ -140,13 +140,42 @@ var rainbowDriver = rainbowDriver || {};
         },
 
         sendKeysToElement: function sendKeysToElement(data) {
-            var element = document.querySelector(data.selector);
+            var element = document.querySelector(data.selector),
+               inputValue = data.value;
 
             if (!element) {
                 return false;
             }
 
-            element.value = data.value;
+            function fireKeyEvent(type, keyValue) {
+                var keyEvent,
+                    keyCharCode = keyValue.charCodeAt(0),
+                    charCode_to_keyCode_map;
+
+                //Special characters which have different ASCII code and event key code
+                charCode_to_keyCode_map = {
+                    '44': 188, //comma
+                    '59': 186, //semicolon
+                    '64': 50  //@
+                };
+
+                if (keyCharCode >= 97 && keyCharCode <= 123) {
+                    keyCharCode = keyValue.toUpperCase().charCodeAt(0);
+                } else if (charCode_to_keyCode_map[keyCharCode]) {
+                    keyCharCode = charCode_to_keyCode_map[keyCharCode];
+                }
+
+                keyEvent = document.createEvent("Events");
+                keyEvent.initEvent(type, true, true);
+                keyEvent.keyCode = keyCharCode;
+                element.dispatchEvent(keyEvent);
+            }
+
+            for (var i = 0; i < inputValue.length; i++) {
+                fireKeyEvent("keydown", inputValue[i]);
+                element.value += inputValue[i];
+                fireKeyEvent("keyup", inputValue[i]);
+            }
 
             var response = JSON.stringify({
                 name: 'sendKeysToElement',
