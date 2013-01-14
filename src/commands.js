@@ -79,6 +79,11 @@ var rainbowDriver = rainbowDriver || {};
 
             element.dispatchEvent(event);
 
+            try{
+                element.focus();
+            } catch(e) {}
+
+
             return true;
         },
 
@@ -122,7 +127,7 @@ var rainbowDriver = rainbowDriver || {};
         },
 
         getSelected: function getSelected(data) {
-            var element = document.querySelector(data.selector);                
+            var element = document.querySelector(data.selector);
 
             if (!element) {
                 return false;
