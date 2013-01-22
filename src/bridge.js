@@ -27,6 +27,8 @@ var rainbowDriver = rainbowDriver || {};
         var ready = {
             status: "ready",
             windowName: rainbowDriver.windowName,
+            windowLoc: rainbowDriver.windowLoc,
+            windowType: rainbowDriver.windowType,
             id: rainbowDriver.id
         };
         sendMessage(JSON.stringify(ready));
