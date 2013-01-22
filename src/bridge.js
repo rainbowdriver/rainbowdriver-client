@@ -24,7 +24,12 @@ var rainbowDriver = rainbowDriver || {};
 
     function connected() {
         writer = new (Windows.Storage.Streams.DataWriter)(connection.outputStream);
-        sendMessage('{ "status": "ready" }');
+        var ready = {
+            status: "ready",
+            windowName: rainbowDriver.windowName,
+            id: rainbowDriver.id
+        };
+        sendMessage(JSON.stringify(ready));
     }
 
     function receivedMessage(message) {
