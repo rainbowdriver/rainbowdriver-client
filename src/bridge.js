@@ -29,6 +29,7 @@ var rainbowDriver = rainbowDriver || {};
             windowName: rainbowDriver.windowName,
             windowLoc: rainbowDriver.windowLoc,
             windowType: rainbowDriver.windowType,
+            backgroundSupported: rainbowDriver.backgroundSupported,
             id: rainbowDriver.id
         };
         sendMessage(JSON.stringify(ready));
