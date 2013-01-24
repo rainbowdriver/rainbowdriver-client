@@ -69,9 +69,14 @@ var rainbowDriver = rainbowDriver || {};
             'command' in data &&
             rainbowDriver.commands &&
             data.command in rainbowDriver.commands) {
-                var result = rainbowDriver.commands[data.command](data);
-                sendMessage(result);
+            var result = rainbowDriver.commands[data.command](data);
+            sendMessage(result);
+        }
+        if (data && 'internalCommand' in data) {
+            if(data.internalCommand === "resetBackgroundSupported") {
+                rainbowDriver.backgroundSupported = false;
             }
+        }
     }
 
     function cleanUp() {
