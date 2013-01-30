@@ -61,28 +61,30 @@ var rainbowDriver = rainbowDriver || {};
         click: function clickElement(data) {
             var element = document.querySelector(data.selector),
                 rect = element.getClientRects()[0],
+                button = data.button || 0,
+                xoffset = data.xoffset || 0,
+                yoffset = data.yoffset || 0,
+                eventType = button === 2 ? 'contextmenu':'click',
                 event;
 
             if (!element) {
                 return false;
             }
+            try {
+                element.focus();
+            } catch (e) { }
 
             event = document.createEvent('MouseEvents');
-            event.initMouseEvent('click', true, false, window, 1,
-                (rect.left + element.clientWidth / 2),
-                (rect.top + element.clientHeight / 2),
-                (rect.left + element.clientWidth / 2),
-                (rect.top + element.clientHeight / 2),
+            event.initMouseEvent(eventType, true, false, window, 1,
+                ((rect.left + element.clientWidth / 2) + xoffset),
+                ((rect.top + element.clientHeight / 2) + yoffset),
+                ((rect.left + element.clientWidth / 2) + xoffset),
+                ((rect.top + element.clientHeight / 2) + yoffset),
                 false, false, false, false, /* keys */
-                0, /* button */
+                button, /* button */
                 element);
 
             element.dispatchEvent(event);
-
-            try{
-                element.focus();
-            } catch(e) {}
-
 
             return true;
         },
