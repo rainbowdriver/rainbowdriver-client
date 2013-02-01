@@ -128,6 +128,22 @@ var rainbowDriver = rainbowDriver || {};
             return response;
         },
 
+        clear: function clear(data) {
+            var element = document.querySelector(data.selector);
+
+            if (!element) {
+                return false;
+            }
+
+            element.value = "";
+
+            var response = JSON.stringify({
+                name: 'clear',
+            });
+
+            return response;
+        },
+
         getSelected: function getSelected(data) {
             var element = document.querySelector(data.selector);
 
