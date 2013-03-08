@@ -5,13 +5,20 @@ var rainbowDriver = rainbowDriver || {};
 
     rainbowDriver.commands = {
         executeScript: function executeScript(data) {
-            var result = eval(data.script);
-
-            return JSON.stringify({
-                name: 'executeScript',
-                status: 0,
-                value: result
-            });
+            try {
+                var result = (new Function(data.script))();
+                return JSON.stringify({
+                    name: 'executeScript',
+                    status: 0,
+                    value: result
+                });
+            } catch (e) {
+                return JSON.stringify({
+                    name: 'executeScript',
+                    status: 1,
+                    value: "Error: " + e.message
+                });
+            }
         },
 
         findElement: function findElement(data) {
@@ -138,7 +145,7 @@ var rainbowDriver = rainbowDriver || {};
             fireKeyEvent(element, "keydown", String.fromCharCode('57367'));
             element.value = "";
             fireKeyEvent(element, "keyup", String.fromCharCode('57367'));
-                
+
 
             var response = JSON.stringify({
                 name: 'clear',
