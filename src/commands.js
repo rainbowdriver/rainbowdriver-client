@@ -74,8 +74,12 @@ var rainbowDriver = rainbowDriver || {};
                 eventType = button === 2 ? 'contextmenu':'click',
                 event;
 
-            if (!element) {
-                return false;
+            if (!element || !rect || typeof rect.left === "undefined") {
+                return JSON.stringify({
+                    name: "clickElement",
+                    status: 7,
+                    statusText: "NoSuchElement"
+                });
             }
             try {
                 element.focus();
@@ -93,7 +97,11 @@ var rainbowDriver = rainbowDriver || {};
 
             element.dispatchEvent(event);
 
-            return true;
+            return JSON.stringify({
+                name: "clickElement",
+                statusText: "OK",
+                status: 0
+            });
         },
 
         getTitle: function getTitle(data) {
