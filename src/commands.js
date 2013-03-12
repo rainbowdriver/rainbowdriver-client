@@ -42,7 +42,13 @@ var rainbowDriver = rainbowDriver || {};
 
         isElementDisplayed: function isElementDisplayed(data) {
             var element = document.querySelector(data.selector);
-
+            if (!element) {
+                return JSON.stringify({
+                    name: "clickElement",
+                    status: 7,
+                    statusText: "NoSuchElement"
+                });
+            }
             return JSON.stringify({
                 name: 'isElementDisplayed',
                 status: 0,
