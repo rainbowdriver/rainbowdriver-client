@@ -7,17 +7,17 @@ var rainbowDriver = rainbowDriver || {};
         executeScript: function executeScript(data) {
             try {
                 var result = (new Function(data.script))();
-                return JSON.stringify({
+                return {
                     command: 'executeScript',
                     status: 0,
                     value: result
-                });
+                };
             } catch (e) {
-                return JSON.stringify({
+                return {
                     command: 'executeScript',
                     status: 1,
                     value: "Error: " + e.message
-                });
+                };
             }
         },
 
@@ -25,48 +25,51 @@ var rainbowDriver = rainbowDriver || {};
             var element = document.querySelector(data.selector);
 
             if (element) {
-                return JSON.stringify({
-                    name: 'findElement',
+                return {
+                    command: 'findElement',
                     elementId: new Date().getTime(),
                     selector: data.selector,
                     status: 0
-                });
+                };
             } else {
-                return JSON.stringify({
-                    name: 'findElement',
+                return {
+                    command: 'findElement',
                     status: 7,
                     selector: data.selector
-                });
+                };
             }
         },
 
         isElementDisplayed: function isElementDisplayed(data) {
             var element = document.querySelector(data.selector);
             if (!element) {
-                return JSON.stringify({
-                    name: "clickElement",
+                return {
+                    command: "clickElement",
                     status: 7,
                     statusText: "NoSuchElement"
-                });
+                };
             }
-            return JSON.stringify({
-                name: 'isElementDisplayed',
+            return {
+                command: 'isElementDisplayed',
                 status: 0,
                 value: element.offsetHeight > 0
-            });
+            };
         },
 
         getElementAttribute: function findElement(data) {
             var element = document.querySelector(data.selector);
 
             if (!element) {
-                return false;
+                return {
+                    command: 'getElementAttribute',
+                    error: 'element not found'
+                };
             }
             else {
-                var response = JSON.stringify({
-                    name: 'getElementAttribute',
+                var response = {
+                    command: 'getElementAttribute',
                     value: element.getAttribute(data.attribute)
-                });
+                };
                 return response;
             }
         },
@@ -81,11 +84,11 @@ var rainbowDriver = rainbowDriver || {};
                 event;
 
             if (!element || !rect || typeof rect.left === "undefined") {
-                return JSON.stringify({
-                    name: "clickElement",
+                return {
+                    command: "clickElement",
                     status: 7,
                     statusText: "NoSuchElement"
-                });
+                };
             }
             try {
                 element.focus();
@@ -103,18 +106,18 @@ var rainbowDriver = rainbowDriver || {};
 
             element.dispatchEvent(event);
 
-            return JSON.stringify({
-                name: "clickElement",
+            return {
+                command: "clickElement",
                 statusText: "OK",
                 status: 0
-            });
+            };
         },
 
         getTitle: function getTitle(data) {
-            var response = JSON.stringify({
-                name: 'getTitle',
+            var response = {
+                command: 'getTitle',
                 value: document.title
-            });
+            };
 
             return response;
         },
@@ -126,10 +129,10 @@ var rainbowDriver = rainbowDriver || {};
                 return false;
             }
 
-            var response = JSON.stringify({
-                name: 'getElementText',
+            var response = {
+                command: 'getElementText',
                 value: element.textContent
-            });
+            };
 
             return response;
         },
@@ -137,15 +140,16 @@ var rainbowDriver = rainbowDriver || {};
         getName: function getName(data) {
             var element = document.querySelector(data.selector);
 
+            var response = {
+                name: 'getElementTagName',
+                value: false
+            };
+
             if (!element) {
-                return false;
+                return response;
             }
 
-            var response = JSON.stringify({
-                name: 'getElementTagName',
-                value: element.tagName
-            });
-
+            response.value = element.tagName;
             return response;
         },
 
@@ -161,9 +165,9 @@ var rainbowDriver = rainbowDriver || {};
             fireKeyEvent(element, "keyup", String.fromCharCode('57367'));
 
 
-            var response = JSON.stringify({
-                name: 'clear',
-            });
+            var response = {
+                command: 'clear',
+            };
 
             return response;
         },
@@ -180,11 +184,11 @@ var rainbowDriver = rainbowDriver || {};
                 selected = element.checked;
             }
 
-            return JSON.stringify({
-                name: 'getSelected',
+            return {
+                command: 'getSelected',
                 status: 0,
                 value: selected
-            });
+            };
         },
 
         sendKeysToElement: function sendKeysToElement(data) {
@@ -202,11 +206,11 @@ var rainbowDriver = rainbowDriver || {};
                 fireKeyEvent(element, "keyup", inputValue[i]);
             }
 
-            var response = JSON.stringify({
-                name: 'sendKeysToElement',
+            var response = {
+                command: 'sendKeysToElement',
                 status: 0,
                 value: ""
-            });
+            };
 
             return response;
         }
