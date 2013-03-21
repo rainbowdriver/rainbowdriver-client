@@ -25,14 +25,14 @@ var rainbowDriver = rainbowDriver || {};
     function connected() {
         writer = new (Windows.Storage.Streams.DataWriter)(connection.outputStream);
         var ready = {
-            status: "ready",
+            command: "ready",
             windowName: rainbowDriver.windowName,
             windowLoc: rainbowDriver.windowLoc,
             windowType: rainbowDriver.windowType,
             backgroundSupported: rainbowDriver.backgroundSupported,
             id: rainbowDriver.id
         };
-        sendMessage(JSON.stringify(ready));
+        sendMessage(ready);
     }
 
     function receivedMessage(message) {
@@ -59,23 +59,44 @@ var rainbowDriver = rainbowDriver || {};
     }
 
     function sendMessage(message) {
+        if(!message.command) {
+            message = {
+                command: 'log',
+                message: 'Not implemented',
+                originalMessage: message
+            };
+        }
+        try {
+            message = JSON.stringify(message);
+        } catch (e) {
+            message = JSON.stringify({
+                command: 'log',
+                message: "Error parsing command response"
+            });
+        }
         console.log("sending message: " + message);
         writer.writeString(message);
         writer.storeAsync().done(null, bridgeError.bind(writer, 'Error sending string, closing connection'));
     }
 
     function executeCommand(data) {
-        if (data &&
-            'command' in data &&
-            rainbowDriver.commands &&
-            data.command in rainbowDriver.commands) {
-            var result = rainbowDriver.commands[data.command](data);
-            sendMessage(result);
-        }
-        if (data && 'internalCommand' in data) {
-            if(data.internalCommand === "resetBackgroundSupported") {
-                rainbowDriver.backgroundSupported = false;
+        try {
+            if (data &&
+                'command' in data &&
+                rainbowDriver.commands &&
+                data.command in rainbowDriver.commands) {
+                var result = rainbowDriver.commands[data.command](data);
+                sendMessage(result);
             }
+            if (data && 'internalCommand' in data) {
+                if(data.internalCommand === "resetBackgroundSupported") {
+                    rainbowDriver.backgroundSupported = false;
+                }
+            }
+        } catch(e) {
+            sendMessage({
+                log: "Error executing command"
+            });
         }
     }
 

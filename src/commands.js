@@ -8,13 +8,13 @@ var rainbowDriver = rainbowDriver || {};
             try {
                 var result = (new Function(data.script))();
                 return JSON.stringify({
-                    name: 'executeScript',
+                    command: 'executeScript',
                     status: 0,
                     value: result
                 });
             } catch (e) {
                 return JSON.stringify({
-                    name: 'executeScript',
+                    command: 'executeScript',
                     status: 1,
                     value: "Error: " + e.message
                 });
