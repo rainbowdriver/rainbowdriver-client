@@ -74,7 +74,7 @@ var rainbowDriver = rainbowDriver || {};
             }
         },
 
-        click: function clickElement(data) {
+        clickElement: function clickElement(data) {
             var element = document.querySelector(data.selector),
                 rect = element.getClientRects()[0],
                 button = data.button || 0,
@@ -122,7 +122,7 @@ var rainbowDriver = rainbowDriver || {};
             return response;
         },
 
-        getValue: function getValue(data) {
+        getElementText: function getElementText(data) {
             var element = document.querySelector(data.selector);
 
             if (!element) {
