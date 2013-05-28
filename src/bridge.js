@@ -50,11 +50,15 @@ var rainbowDriver = rainbowDriver || {};
             console.info("Message received: ", receivedString);
             try {
                 receivedData = JSON.parse(receivedString);
-            } catch (e) { }
+            } catch (e) {
+                return bridgeError('Invalid JSON');
+            }
         }
 
         if (receivedData) {
             executeCommand(receivedData);
+        } else {
+            bridgeError('Received empty data');
         }
     }
 
@@ -75,8 +79,12 @@ var rainbowDriver = rainbowDriver || {};
             });
         }
         console.log("sending message: " + message);
-        writer.writeString(message);
-        writer.storeAsync().done(null, bridgeError.bind(writer, 'Error sending string, closing connection'));
+        if (writer) {
+            writer.writeString(message);
+            return writer.storeAsync().then(null, bridgeError.bind(writer, 'Error sending string, closing connection'));
+        } else {
+            return WinJS.Promise.wrapError();
+        }
     }
 
     function executeCommand(data) {
@@ -87,6 +95,8 @@ var rainbowDriver = rainbowDriver || {};
                 data.command in rainbowDriver.commands) {
                 var result = rainbowDriver.commands[data.command](data);
                 sendMessage(result);
+            } else {
+                bridgeError('Command not found');
             }
             if (data && 'internalCommand' in data) {
                 if(data.internalCommand === "resetBackgroundSupported") {
@@ -113,11 +123,11 @@ var rainbowDriver = rainbowDriver || {};
     }
 
     function bridgeError(message, error) {
-        console.log(message);
+        console.warn(message);
         if (error) {
             console.log(error);
         }
-        cleanUp();
+        sendMessage({ command: 'log', message: message }).then(null, cleanUp);
     }
 
     rainbowDriver.connect = connect;
