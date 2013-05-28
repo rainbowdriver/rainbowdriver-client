@@ -153,7 +153,7 @@ var rainbowDriver = rainbowDriver || {};
             return response;
         },
 
-        clear: function clear(data) {
+        clearInput: function clear(data) {
             var element = document.querySelector(data.selector);
 
             if (!element) {
@@ -166,7 +166,7 @@ var rainbowDriver = rainbowDriver || {};
 
 
             var response = {
-                command: 'clear',
+                command: 'clearInput',
             };
 
             return response;
