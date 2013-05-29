@@ -88,12 +88,23 @@ var rainbowDriver = rainbowDriver || {};
     }
 
     function executeCommand(data) {
+        var result;
         try {
             if (data &&
                 'command' in data &&
                 rainbowDriver.commands &&
                 data.command in rainbowDriver.commands) {
-                var result = rainbowDriver.commands[data.command](data);
+                try {
+                    result = rainbowDriver.commands[data.command](data);
+                } catch(error) {
+                    result = {
+                        status: 13, // 13 == Unknown error JsonWireProtocol
+                        command: data.command,
+                        errorCode: error && error.code,
+                        errorMessage: error && error.message,
+                        errorName: error && error.name,
+                    };
+                }
                 sendMessage(result);
             } else {
                 respondWithError('Command not found');
@@ -104,7 +115,7 @@ var rainbowDriver = rainbowDriver || {};
                 }
             }
         } catch(e) {
-            respondWithError("Error executing command");
+            respondWithError("RainbowDriver client error");
         }
     }
 
