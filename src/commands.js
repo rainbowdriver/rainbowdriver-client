@@ -40,7 +40,7 @@ var rainbowDriver = rainbowDriver || {};
             }
         },
 		
-		findElements: function findElement(data) {
+		findElements: function (data) {
             var elements = document.querySelectorAll(data.selector),
                 ids;
 
