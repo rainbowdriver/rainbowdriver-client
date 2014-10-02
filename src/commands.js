@@ -39,6 +39,31 @@ var rainbowDriver = rainbowDriver || {};
                 };
             }
         },
+		
+		findElements: function findElement(data) {
+            var elements = document.querySelectorAll(data.selector),
+                ids;
+
+            if (elements) {
+                ids = [];
+
+                for (var i = 0; i < elements.length; i++) {
+                    ids.push({ selector: data.selector, id: new Date().getTime() })
+                }
+
+                return {
+                    command: 'findElements',
+                    elements: ids,
+                    status: 0
+                };
+            } else {
+                return {
+                    command: 'findElements',
+                    status: 7,
+                    selector: data.selector
+                };
+            }
+        },
 
         isElementDisplayed: function isElementDisplayed(data) {
             var element = document.querySelector(data.selector);
